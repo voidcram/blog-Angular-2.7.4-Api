@@ -72,7 +72,7 @@ public class UserService {
 
     // Mappers
     private UserResponse mapToDTO(User user) {
-        return new UserResponse(user.getId(), user.getUsername());
+        return new UserResponse(user.getId(), user.getUsername(), user.getEmail());
     }
 
     private User mapToEntity(UserRequest userRequest) {
