@@ -41,8 +41,8 @@ public class UserService {
     }
 
     public ResponseEntity<UserResponse> createUser(UserRequest userRequest) {
-        if (userRepository.existsUserByEmail(userRequest.email())) {
-            throw new DuplicateResourceException("Email already taken");
+        if (userRepository.existsUserByUsername(userRequest.username())) {
+            throw new DuplicateResourceException("Username already taken");
         }
 
 //      Build user from request DTO
@@ -55,7 +55,7 @@ public class UserService {
     public ResponseEntity<UserResponse> updateUser(UUID id, UserRequest userRequest) {
         User savedUser = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 
-        savedUser.setName(userRequest.name());
+        savedUser.setUsername(userRequest.username());
         savedUser.setEmail(userRequest.email());
         savedUser.setPassword(passwordEncoder.encode(userRequest.password()));
 
@@ -72,12 +72,12 @@ public class UserService {
 
     // Mappers
     private UserResponse mapToDTO(User user) {
-        return new UserResponse(user.getId(), user.getName(), user.getEmail());
+        return new UserResponse(user.getId(), user.getUsername());
     }
 
     private User mapToEntity(UserRequest userRequest) {
         return User.builder()
-                .name(userRequest.name())
+                .username(userRequest.username())
                 .email(userRequest.email())
                 .password(userRequest.password())
                 .build();
