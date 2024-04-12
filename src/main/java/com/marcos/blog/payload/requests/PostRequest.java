@@ -13,7 +13,7 @@ public record PostRequest(
 
         @NotEmpty
         @Size(min = 50, max = 2000)
-        String description,
+        String body,
 
         @NotNull
         UUID userId

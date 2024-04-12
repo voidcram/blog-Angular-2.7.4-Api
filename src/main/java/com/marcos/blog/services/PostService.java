@@ -58,7 +58,7 @@ public class PostService {
 
 //      Update saved post values
         savedPost.setTitle(postRequest.title());
-        savedPost.setDescription(postRequest.description());
+        savedPost.setBody(postRequest.body());
         savedPost.setUser(user);
         Post updatedPost = postRepository.save(savedPost);
 
@@ -74,7 +74,7 @@ public class PostService {
 
     // Mappers
     private PostResponse mapToDTO(Post post) {
-        return new PostResponse(post.getId(), post.getTitle(), post.getDescription(), post.getUser().getId());
+        return new PostResponse(post.getId(), post.getTitle(), post.getBody(), post.getUser().getId());
     }
 
     private Post mapToEntity(PostRequest postRequest) {
@@ -82,7 +82,7 @@ public class PostService {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         return Post.builder()
                 .title(postRequest.title())
-                .description(postRequest.description())
+                .body(postRequest.body())
                 .user(user)
                 .build();
     }

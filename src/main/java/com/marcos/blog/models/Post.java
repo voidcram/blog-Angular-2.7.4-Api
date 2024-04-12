@@ -20,11 +20,13 @@ public class Post {
     @GeneratedValue
     private UUID id;
 
+    @Column(nullable = false)
     private String title;
-    private String description;
+    @Column(nullable = false)
+    private String body;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @UpdateTimestamp
