@@ -6,6 +6,6 @@ public record PostResponse(
         UUID id,
         String title,
         String description,
-        UUID userId
+        UserResponse user
 ) {
 }
