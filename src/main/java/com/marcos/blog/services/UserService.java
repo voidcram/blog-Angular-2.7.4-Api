@@ -41,8 +41,12 @@ public class UserService {
     }
 
     public ResponseEntity<UserResponse> createUser(UserRequest userRequest) {
-        if (userRepository.existsUserByUsername(userRequest.username())) {
+//      Check if already exists a user with that username or email
+        if (userRepository.existsByUsername(userRequest.username())) {
             throw new DuplicateResourceException("Username already taken");
+        }
+        if (userRepository.existsByEmail(userRequest.email())) {
+            throw new DuplicateResourceException("Email already taken");
         }
 
 //      Build user from request DTO
