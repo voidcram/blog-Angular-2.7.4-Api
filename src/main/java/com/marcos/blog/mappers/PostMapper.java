@@ -21,7 +21,14 @@ public class PostMapper {
     }
 
     public PostResponse mapToDTO(Post post) {
-        return new PostResponse(post.getId(), post.getTitle(), post.getBody(), userMapper.mapToDTO(post.getUser()));
+        return new PostResponse(
+                post.getId(),
+                post.getTitle(),
+                post.getBody(),
+                userMapper.mapToDTO(post.getUser()),
+                post.getUpdatedAt(),
+                post.getCreatedAt()
+        );
     }
 
     public Post mapToEntity(PostRequest postRequest) {
