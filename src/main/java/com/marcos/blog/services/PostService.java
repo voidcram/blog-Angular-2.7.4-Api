@@ -1,6 +1,7 @@
 package com.marcos.blog.services;
 
 import com.marcos.blog.exceptions.ResourceNotFoundException;
+import com.marcos.blog.mappers.PostMapper;
 import com.marcos.blog.models.Post;
 import com.marcos.blog.models.User;
 import com.marcos.blog.payload.requests.PostRequest;
@@ -19,10 +20,12 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final PostMapper postMapper;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository) {
+    public PostService(PostRepository postRepository, UserRepository userRepository, PostMapper postMapper) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.postMapper = postMapper;
     }
 
     public ResponseEntity<List<PostResponse>> getAllPosts() {
@@ -30,7 +33,7 @@ public class PostService {
 
 //      Map into response DTO
         List<PostResponse> postResponses = posts.stream()
-                .map(this::mapToDTO)
+                .map(postMapper::mapToDTO)
                 .toList();
 
         return new ResponseEntity<>(postResponses, HttpStatus.OK);
@@ -38,16 +41,16 @@ public class PostService {
 
     public ResponseEntity<PostResponse> getPostById(UUID id) {
         Post savedPost = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
-        return new ResponseEntity<>(mapToDTO(savedPost), HttpStatus.OK);
+        return new ResponseEntity<>(postMapper.mapToDTO(savedPost), HttpStatus.OK);
     }
 
     public ResponseEntity<PostResponse> createPost(PostRequest postRequest) {
 
         //      Map request into entity and save to db
-        Post post = mapToEntity(postRequest);
+        Post post = postMapper.mapToEntity(postRequest);
         Post savedPost = postRepository.save(post);
 
-        return new ResponseEntity<>(mapToDTO(savedPost), HttpStatus.CREATED);
+        return new ResponseEntity<>(postMapper.mapToDTO(savedPost), HttpStatus.CREATED);
     }
 
     public ResponseEntity<PostResponse> updatePost(UUID id, PostRequest postRequest) {
@@ -62,7 +65,7 @@ public class PostService {
         savedPost.setUser(user);
         Post updatedPost = postRepository.save(savedPost);
 
-        return new ResponseEntity<>(mapToDTO(updatedPost), HttpStatus.OK);
+        return new ResponseEntity<>(postMapper.mapToDTO(updatedPost), HttpStatus.OK);
     }
 
     public ResponseEntity<Void> deletePost(UUID id) {
@@ -71,20 +74,4 @@ public class PostService {
 
         return ResponseEntity.noContent().build();
     }
-
-    // Mappers
-    private PostResponse mapToDTO(Post post) {
-        return new PostResponse(post.getId(), post.getTitle(), post.getBody(), post.getUser().getId());
-    }
-
-    private Post mapToEntity(PostRequest postRequest) {
-        UUID userId = postRequest.userId();
-        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
-        return Post.builder()
-                .title(postRequest.title())
-                .body(postRequest.body())
-                .user(user)
-                .build();
-    }
-
 }

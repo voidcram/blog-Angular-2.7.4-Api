@@ -2,6 +2,7 @@ package com.marcos.blog.services;
 
 import com.marcos.blog.exceptions.DuplicateResourceException;
 import com.marcos.blog.exceptions.ResourceNotFoundException;
+import com.marcos.blog.mappers.UserMapper;
 import com.marcos.blog.models.User;
 import com.marcos.blog.payload.requests.UserRequest;
 import com.marcos.blog.payload.response.UserResponse;
@@ -18,10 +19,12 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userMapper = userMapper;
     }
 
     public ResponseEntity<List<UserResponse>> getAllUsers() {
@@ -29,7 +32,7 @@ public class UserService {
 
 //      Map into response DTO
         List<UserResponse> userResponses = users.stream()
-                .map(this::mapToDTO)
+                .map(userMapper::mapToDTO)
                 .toList();
 
         return new ResponseEntity<>(userResponses, HttpStatus.OK);
@@ -37,7 +40,7 @@ public class UserService {
 
     public ResponseEntity<UserResponse> getUserById(UUID id) {
         User savedUser = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
-        return new ResponseEntity<>(mapToDTO(savedUser), HttpStatus.OK);
+        return new ResponseEntity<>(userMapper.mapToDTO(savedUser), HttpStatus.OK);
     }
 
     public ResponseEntity<UserResponse> createUser(UserRequest userRequest) {
@@ -50,10 +53,10 @@ public class UserService {
         }
 
 //      Build user from request DTO
-        User user = mapToEntity(userRequest);
+        User user = userMapper.mapToEntity(userRequest);
         User savedUser = userRepository.save(user);
 
-        return new ResponseEntity<>(mapToDTO(savedUser), HttpStatus.CREATED);
+        return new ResponseEntity<>(userMapper.mapToDTO(savedUser), HttpStatus.CREATED);
     }
 
     public ResponseEntity<UserResponse> updateUser(UUID id, UserRequest userRequest) {
@@ -64,7 +67,7 @@ public class UserService {
         savedUser.setPassword(passwordEncoder.encode(userRequest.password()));
 
         User updatedUser = userRepository.save(savedUser);
-        return new ResponseEntity<>(mapToDTO(updatedUser), HttpStatus.OK);
+        return new ResponseEntity<>(userMapper.mapToDTO(updatedUser), HttpStatus.OK);
     }
 
     public ResponseEntity<Void> deleteUser(UUID id) {
@@ -72,18 +75,5 @@ public class UserService {
         userRepository.delete(savedUser);
 
         return ResponseEntity.noContent().build();
-    }
-
-    // Mappers
-    private UserResponse mapToDTO(User user) {
-        return new UserResponse(user.getId(), user.getUsername(), user.getEmail());
-    }
-
-    private User mapToEntity(UserRequest userRequest) {
-        return User.builder()
-                .username(userRequest.username())
-                .email(userRequest.email())
-                .password(passwordEncoder.encode(userRequest.password()))
-                .build();
     }
 }
