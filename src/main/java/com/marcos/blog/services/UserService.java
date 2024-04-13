@@ -79,7 +79,7 @@ public class UserService {
         return User.builder()
                 .username(userRequest.username())
                 .email(userRequest.email())
-                .password(userRequest.password())
+                .password(passwordEncoder.encode(userRequest.password()))
                 .build();
     }
 }
