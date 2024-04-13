@@ -42,22 +42,16 @@ public class AuthService implements UserDetailsService {
     }
 
     public ResponseEntity<AuthResponse> register(UserRequest request) {
-        String username = request.username();
-        String password = request.password();
-
         userService.createUser(request);
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(username, password, null);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(request.username(), request.password(), null);
         String accessToken = jwtUtils.createToken(authentication);
 
         return new ResponseEntity<>(new AuthResponse("User created successfully", accessToken), HttpStatus.OK);
     }
 
     public ResponseEntity<AuthResponse> login(LoginRequest request) {
-        String username = request.username();
-        String password = request.password();
-
-        Authentication authentication = this.authenticate(username, password);
+        Authentication authentication = this.authenticate(request.username(), request.password());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String accessToken = jwtUtils.createToken(authentication);
