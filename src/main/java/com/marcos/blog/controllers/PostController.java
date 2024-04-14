@@ -1,6 +1,5 @@
 package com.marcos.blog.controllers;
 
-import com.marcos.blog.models.Post;
 import com.marcos.blog.payload.requests.PostRequest;
 import com.marcos.blog.payload.response.PostResponse;
 import com.marcos.blog.services.PostService;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("api/v1/posts")
 public class PostController {
