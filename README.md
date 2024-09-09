@@ -1,6 +1,6 @@
 # 📖 Blog API - Spring Boot
 
-Bienvenido al repositorio de la **API de Blog** desarrollada en **Spring Boot**. Este proyecto es una API RESTful que gestiona las funcionalidades básicas de un blog, permitiendo la creación, edición, gestión de publicaciones y usuarios.
+Este proyecto es una API REST que gestiona las funcionalidades básicas de un blog, permitiendo la creación, edición, gestión de publicaciones y usuarios. El objetivo de este proyecto era aprender a trabajar con **Spring Boot**
 
 ---
 
